@@ -213,8 +213,10 @@ public:
     }
     
     void PopBack() {
-        std::destroy_n(data_ + size_ - 1, 1);
-        --size_;
+        if (size_ > 0) {
+            std::destroy_n(data_ + size_ - 1, 1);
+            --size_;
+        }
     }
     
     template <typename... Args>
@@ -240,6 +242,7 @@ public:
     // Вставляемый элемент должен копироваться либо перемещаться. Это зависит от версии метода Insert.
     template <typename... Args>
     iterator Emplace(const_iterator pos, Args&&... args) {
+        assert(pos >= begin() && pos <= end());
         if (pos == end()) {
             return &EmplaceBack(std::forward<Args>(args)...);
         }
@@ -293,6 +296,7 @@ public:
     }
 
     iterator Erase(const_iterator pos) {
+        assert(pos >= begin() && pos <= end());
         if (pos == end()) {
             PopBack();
             return end();
